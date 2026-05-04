@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
+import alertRuleRoutes from './routes/alertRuleRoutes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { AppError } from './utils/AppError.js';
 
@@ -17,6 +18,7 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/alerts', alertRuleRoutes);
 
 // Handle unhandled routes (404)
 app.all('*', (req, res, next) => {
