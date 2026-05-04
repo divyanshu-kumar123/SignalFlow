@@ -1,12 +1,8 @@
 import { Worker } from 'bullmq';
 import redisClient from '../config/redis.js';
 import AlertLog from '../models/AlertLog.js';
+import { getIO } from '../config/socket.js'; 
 
-/**
- * The background worker that processes triggered alerts.
- * Decouples the heavy lifting of database logging and future websocket broadcasting 
- * from the main evaluation loop.
- */
 export const setupAlertWorker = () => {
   const worker = new Worker(
     'alert-notifications',
@@ -21,16 +17,29 @@ export const setupAlertWorker = () => {
       } = job.data;
 
       // Create the official audit log in the database
-      await AlertLog.create({
+      const log = await AlertLog.create({
         rule_id,
         triggered_price,
       });
 
-      // Log to the terminal for visual confirmation during development
-      console.log(`🔔 ALERT PROCESSED: User ${user_id} | ${asset_symbol} ${condition} ${target_price} | Triggered at $${triggered_price}`);
+      console.log(`ALERT PROCESSED: User ${user_id} | ${asset_symbol} ${condition} ${target_price} | Triggered at $${triggered_price}`);
 
-      // Note: later we will inject our WebSocket broadcasting logic here
-      // to push this real-time notification to the frontend.
+      // Broadcast the real-time notification to the frontend
+      try {
+        const io = getIO();
+        // Emit exclusively to the user's private room
+        io.to(user_id.toString()).emit('alert-triggered', {
+          log_id: log._id,
+          rule_id,
+          asset_symbol,
+          condition,
+          target_price,
+          triggered_price,
+          timestamp: log.createdAt,
+        });
+      } catch (error) {
+        console.error('WebSocket Error: Could not emit alert notification', error);
+      }
     },
     { connection: redisClient }
   );
@@ -39,5 +48,5 @@ export const setupAlertWorker = () => {
     console.error(`Worker Error: Job ${job.id} failed with error - ${err.message}`);
   });
 
-  console.log('👷 BullMQ Worker: Listening for alert jobs...');
+  console.log('BullMQ Worker: Listening for alert jobs...');
 };
