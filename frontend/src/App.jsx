@@ -1,9 +1,48 @@
-import React from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <div>App</div>
-  )
+    <AuthProvider>
+      <Router>
+        <Toaster 
+          position="top-right" 
+          toastOptions={{
+            style: {
+              background: '#1e293b', 
+              color: '#f8fafc', 
+              border: '1px solid #334155', 
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981', 
+                secondary: '#1e293b',
+              },
+            },
+          }}
+        />
+        
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
