@@ -3,15 +3,16 @@ import toast from 'react-hot-toast';
 import { Activity, BellRing } from 'lucide-react';
 import { socket } from '../utils/socket';
 import { useAuth } from '../context/AuthContext';
+import CreateAlertForm from '../components/CreateAlertForm';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const [recentAlerts, setRecentAlerts] = useState([]);
 
   useEffect(() => {
-    // Listen for the specific event emitted by our BullMQ worker
     socket.on('alert-triggered', (alertData) => {
       
+      // Fire off a high-priority toast notification
       toast.custom((t) => (
         <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-slate-800 shadow-2xl rounded-lg pointer-events-auto flex ring-1 ring-emerald-500/50`}>
           <div className="flex-1 w-0 p-4">
@@ -45,6 +46,7 @@ export default function Dashboard() {
 
       setRecentAlerts((prev) => [alertData, ...prev]);
     });
+
     return () => {
       socket.off('alert-triggered');
     };
@@ -52,6 +54,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950 p-4 md:p-8">
+      {/* Top Navigation Bar */}
       <nav className="flex justify-between items-center mb-12 border-b border-slate-800 pb-4">
         <div className="flex items-center space-x-3">
           <Activity className="h-8 w-8 text-emerald-500" />
@@ -71,12 +74,13 @@ export default function Dashboard() {
       {/* Main Content Area */}
       <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Column: Form Placeholder */}
-        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg h-fit">
+        {/* Left Column: Create Alert Form */}
+        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg flex flex-col h-auto">
           <h2 className="text-xl font-bold text-white mb-4">Create Alert Rule</h2>
           <p className="text-sm text-slate-400 mb-6">Define your market parameters. The system will notify you the moment conditions are met.</p>
-          <div className="border-2 border-dashed border-slate-700 rounded-xl h-64 flex items-center justify-center text-slate-500">
-            Form UI Coming Next
+          
+          <div className="flex-1">
+            <CreateAlertForm /> 
           </div>
         </div>
 
