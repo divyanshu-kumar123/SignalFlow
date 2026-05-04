@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../services/api';
+import { socket } from '../utils/socket';
 
 // Create the context
 const AuthContext = createContext();
@@ -22,11 +23,24 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  //Socket Connection Management
+  useEffect(() => {
+    if (user) {
+      // Connect to the WebSocket server
+      socket.connect();
+      socket.emit('join-user-room', user._id);
+    } else {
+      socket.disconnect();
+    }
+    return () => {
+      socket.disconnect();
+    };
+  }, [user]);
+
   const login = async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     const { data } = response.data;
     
-    // Save to local storage for persistence across refreshes
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify({ _id: data._id, email: data.email }));
     
