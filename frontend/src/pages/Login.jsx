@@ -43,7 +43,7 @@ export default function Login() {
             <TrendingUp className="h-8 w-8 text-emerald-400" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-white tracking-tight">
-            {isRegistering ? 'Initialize Account' : 'Access Terminal'}
+            {isRegistering ? 'Register' : 'Login'}
           </h2>
           <p className="mt-2 text-sm text-slate-400">
             SignalFlow Real-Time Market Alerts
@@ -83,7 +83,7 @@ export default function Login() {
               disabled={isLoading}
               className={`w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-slate-950 bg-emerald-500 hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-emerald-500 transition-all ${isLoading ? 'opacity-70 cursor-wait' : 'hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]'}`}
             >
-              {isLoading ? 'Processing...' : (isRegistering ? 'Create Account' : 'Authenticate')}
+              {isLoading ? 'Processing...' : (isRegistering ? 'Create Account' : 'Login')}
             </button>
           </div>
         </form>
@@ -96,8 +96,8 @@ export default function Login() {
             onClick={() => setIsRegistering(!isRegistering)}
           >
             {isRegistering 
-              ? 'Already have access? Authenticate' 
-              : "No access token? Initialize account"}
+              ? 'Already Registered? Login' 
+              : "Haven't registered yet? Register"}
           </button>
         </div>
       </div>

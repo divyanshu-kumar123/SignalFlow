@@ -17,7 +17,7 @@ export default function Dashboard() {
         <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-slate-800 shadow-2xl rounded-lg pointer-events-auto flex ring-1 ring-emerald-500/50`}>
           <div className="flex-1 w-0 p-4">
             <div className="flex items-start">
-              <div className="flex-shrink-0 pt-0.5">
+              <div className="shrink-0 pt-0.5">
                 <BellRing className="h-10 w-10 text-emerald-400 p-2 bg-emerald-400/10 rounded-full" />
               </div>
               <div className="ml-3 flex-1">
@@ -66,7 +66,7 @@ export default function Dashboard() {
             onClick={logout}
             className="text-sm text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors border border-slate-700"
           >
-            Disconnect
+            Logout
           </button>
         </div>
       </nav>
