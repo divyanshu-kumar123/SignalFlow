@@ -4,14 +4,35 @@ import { Activity, BellRing } from 'lucide-react';
 import { socket } from '../utils/socket';
 import { useAuth } from '../context/AuthContext';
 import CreateAlertForm from '../components/CreateAlertForm';
+import LiveChart from '../components/LiveChart';
+import api from '../services/api'; // Import your API to fetch assets
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const [recentAlerts, setRecentAlerts] = useState([]);
+  const [selectedAsset, setSelectedAsset] = useState('');
+  const [availableAssets, setAvailableAssets] = useState([]);
+
+  //Fetch assets from backend on load
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const response = await api.get('/assets');
+        const assets = response.data.data;
+        setAvailableAssets(assets);
+        if (assets.length > 0) {
+          setSelectedAsset(assets[0]); 
+        }
+      } catch (error) {
+        console.error("Failed to fetch assets", error);
+        toast.error("Could not load market assets");
+      }
+    };
+    fetchAssets();
+  }, []);
 
   useEffect(() => {
     socket.on('alert-triggered', (alertData) => {
-      
       // Fire off a high-priority toast notification
       toast.custom((t) => (
         <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-slate-800 shadow-2xl rounded-lg pointer-events-auto flex ring-1 ring-emerald-500/50`}>
@@ -86,6 +107,26 @@ export default function Dashboard() {
 
         {/* Right Column: Active Feed */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Live LiveChart Controls */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 bg-slate-900 p-1 rounded-xl w-fit border border-slate-800">
+              {availableAssets.map((asset) => (
+                <button
+                  key={asset}
+                  onClick={() => setSelectedAsset(asset)}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                    selectedAsset === asset
+                      ? 'bg-emerald-500 text-slate-950 shadow-md'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  {asset}
+                </button>
+              ))}
+            </div>
+            {selectedAsset && <LiveChart key={selectedAsset} symbol={selectedAsset} />}
+          </div>
+
           <h2 className="text-xl font-bold text-white flex items-center">
             <span className="relative flex h-3 w-3 mr-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

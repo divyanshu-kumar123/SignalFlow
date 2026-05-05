@@ -4,6 +4,7 @@ import authRoutes from './routes/authRoutes.js';
 import alertRuleRoutes from './routes/alertRuleRoutes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { AppError } from './utils/AppError.js';
+import assetRoutes from './routes/assetRoutes.js';
 
 const app = express();
 
@@ -19,6 +20,9 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/alerts', alertRuleRoutes);
+app.use('/api/assets', assetRoutes);
+
+
 
 // Handle unhandled routes (404)
 app.all('*', (req, res, next) => {

@@ -1,11 +1,6 @@
 import redisClient from '../config/redis.js';
-
-// The assets we are tracking and their baseline starting prices
-const ASSETS = {
-  BTC: 65000,
-  ETH: 3500,
-  NIFTY50: 22000,
-};
+import { getIO } from '../config/socket.js'; // <-- ADDED: Import the socket instance
+import { DEFAULT_PRICES } from '../config/constants.js';
 
 /**
  * Simulates real-time market fluctuations.
@@ -26,7 +21,7 @@ export const startTicker = () => {
 
   setInterval(async () => {
     try {
-      for (const [symbol, basePrice] of Object.entries(ASSETS)) {
+      for (const [symbol, basePrice] of Object.entries(DEFAULT_PRICES)) {
         // Get the last known price from Redis, or use the baseline if it's the first run
         const lastPriceStr = await redisClient.hget('live_prices', symbol);
         const lastPrice = lastPriceStr ? parseFloat(lastPriceStr) : basePrice;
@@ -36,11 +31,21 @@ export const startTicker = () => {
         // Update the Redis hash with the new price
         await redisClient.hset('live_prices', symbol, newPrice);
         
+        // Broadcast the new price instantly to all connected frontend clients
+        const io = getIO();
+        if (io) {
+          io.emit('price-update', {
+            symbol: symbol, 
+            price: newPrice,
+            timestamp: Date.now()
+          });
+        }
+
         // Optional: Log to terminal so we can visually confirm it's working
         console.log(`Ticker: ${symbol} -> $${newPrice}`);
       }
     } catch (error) {
       console.error('Ticker Error: Failed to update prices in Redis', error);
     }
-  }, 5000); 
+  }, 3000); 
 };
