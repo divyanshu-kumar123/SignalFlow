@@ -1,40 +1,30 @@
 services:
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
     networks:
       - signalflow-network
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    # THIS is how we tell Docker to use your existing backend variables
-    env_file:
-      - ./backend/.env
-    # We can still manually override specific variables just for Docker
+    build: ./backend
+    env_file: ./backend/.env
     environment:
       - REDIS_HOST=redis
-    depends_on:
-      - redis
     networks:
       - signalflow-network
+    ports:
+      - "8000:8000"
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
       args:
-        - VITE_API_URL=http://localhost:8000/api
-    ports:
-      - "3000:80" 
-    depends_on:
-      - backend
+        - VITE_API_URL=/api
     networks:
       - signalflow-network
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
 
 networks:
   signalflow-network:

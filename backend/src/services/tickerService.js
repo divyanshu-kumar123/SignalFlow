@@ -42,7 +42,7 @@ export const startTicker = () => {
         }
 
         // Optional: Log to terminal so we can visually confirm it's working
-        console.log(`Ticker: ${symbol} -> $${newPrice}`);
+        // console.log(`Ticker: ${symbol} -> $${newPrice}`);
       }
     } catch (error) {
       console.error('Ticker Error: Failed to update prices in Redis', error);
