@@ -3,7 +3,7 @@
 SignalFlow is a full-stack, real-time cryptocurrency price monitoring and alert system. It allows users to set specific price conditions for various assets and receive instant WebSocket-driven notifications when those conditions are met.
 
 ## 🚀 Live Demo
-- **Frontend (Live):** https://signal-flow-eight.vercel.app/dashboard
+- **Frontend (Live):** https://signal-flow-eight.vercel.app
 - **Backend API:** https://signalflow-z5dm.onrender.com
 
 ---
